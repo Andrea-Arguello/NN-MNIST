@@ -3,10 +3,6 @@ import numpy as np
 
 sigmoid = lambda x: (1.0 / (1.0 + np.exp(-x))) # a_l = sigmoid(z_l)
 
-def sigmoid_2(z):
-    a = [sigmoid(x) for x in z]
-    return np.asarray(a).reshape(z.shape)
-
 flatten_list_of_arrays = lambda list_of_arrays: reduce(
     lambda acc, v: np.array([*acc.flatten(), *v.flatten()]),
     list_of_arrays
@@ -25,7 +21,7 @@ def inflate_matrices(flat_thetas, shapes):
     ]
 
 def feed_forward(thetas, X): #Este feed forward entra con todos de un solo
-    a = [np.asarray(X)]
+    a = [X]
     for i in range(len(thetas)):
         a.append(
             sigmoid(
@@ -55,6 +51,6 @@ def back_propagation(flat_thetas, shapes, X, y):
         deltas[l] = deltas[l+1] @ np.delete(thetas[l], 0, 1) * a[l]*(1-a[l]) # 2.4 - Theta sin el bias
     return flatten_list_of_arrays([
         np.matmul(deltas[l+1].T, np.hstack((
-        np.ones(len(a[l])).reshape(len(a[l]),1),
-        a[l]))) / m for l in range(layers-1)
+        np.ones(len(a[l])).reshape(len(a[l]),1), # le agregamos bias
+        a[l]))) / m for l in range(layers-1) # de una vez dividamos por m
     ])
